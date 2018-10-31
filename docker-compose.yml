@@ -1,0 +1,37 @@
+version: "3"
+
+services:
+  mysql-5.7:
+    image: mysql:5.7
+    container_name: mysql-5.7
+    restart: always
+    environment:
+      - MYSQL_ROOT_PASSWORD=root
+      - MYSQL_DATABASE=lportal
+    ports:
+      - "3306:3306"
+    volumes:
+      - ./mysql/data:/var/lib/mysql
+    networks: 
+      - myliferay
+  
+  liferay-7.1:
+    image: liferay/portal:7.1.0-ga1
+    container_name: liferay-7.1
+    environment:
+      - LIFERAY_JDBC_PERIOD_DEFAULT_PERIOD_DRIVER_UPPERCASEC_LASS_UPPERCASEN_AME=com.mysql.jdbc.Driver
+      - LIFERAY_JDBC_PERIOD_DEFAULT_PERIOD_PASSWORD=root
+      - LIFERAY_JDBC_PERIOD_DEFAULT_PERIOD_URL=jdbc:mysql://mysql-5.7/lportal?useUnicode=true&amp;characterEncoding=UTF-8
+      - LIFERAY_JDBC_PERIOD_DEFAULT_PERIOD_USERNAME=root
+    ports:
+      - "8080:8080"
+    depends_on:
+      - mysql-5.7
+    volumes:
+      - ./liferay/data:/opt/liferay-portal-7.1.0-ga1/data
+      - ./liferay/config:/etc/liferay/mount
+    networks: 
+      - myliferay
+
+networks:
+  myliferay:
